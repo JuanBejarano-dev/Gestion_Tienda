@@ -1,7 +1,15 @@
 import tkinter as tk
-from tkinter import ttk
-
-def mostrar_ventana_clientes():
-    ventana = tk.Toplevel()
-    ventana.title("Clientes")
-    ventana.geometry("400x300")
+from . import Interfaz
+def regresar():
+    InterfazClientes.withdraw()
+    Interfaz.mostrar_interfaz()
+    
+def mostrarInterfazClientes():   
+    global InterfazClientes
+    InterfazClientes = tk.Tk()
+    InterfazClientes.geometry("500x500")
+    label1 = tk.Label(InterfazClientes, text= "Interfaz de clientes")  
+    label1.pack()
+    botonC = tk.Button(InterfazClientes,text="Regresar", command=regresar)
+    botonC.pack()
+    InterfazClientes.mainloop()
