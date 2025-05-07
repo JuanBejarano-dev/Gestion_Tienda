@@ -1,4 +1,5 @@
 import tkinter as tk
+import Gui_Clientes as clientes
 
 root = tk.Tk()
 root.title("Gestion Tienda")
@@ -26,7 +27,7 @@ button_frame.grid_columnconfigure(0, weight=1)
 
 botonP = tk.Button(button_frame, text="Productos", bg="red", fg="white",width=50, height=3)
 botonF = tk.Button(button_frame, text="Facturas", bg="blue", fg="white",width=50, height=3)
-botonC = tk.Button(button_frame, text="Clientes", bg="blue", fg="white",width=50, height=3)
+botonC = tk.Button(button_frame, text="Clientes", bg="blue", fg="white", width=50, height=3, command=clientes.mostrar_ventana_clientes)
 botonS = tk.Button(button_frame, text="Salir", bg="green", fg="white",width=50, height=3)
 
 
