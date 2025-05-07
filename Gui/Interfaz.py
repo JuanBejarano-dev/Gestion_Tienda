@@ -1,5 +1,8 @@
 import tkinter as tk
 import Gui_Clientes as clientes
+import Gui_Facturas as facturas
+import Gui_Productos as productos
+
 
 root = tk.Tk()
 root.title("Gestion Tienda")
@@ -25,10 +28,10 @@ for i in range(4):
     button_frame.grid_rowconfigure(i, weight=1)
 button_frame.grid_columnconfigure(0, weight=1)
 
-botonP = tk.Button(button_frame, text="Productos", bg="red", fg="white",width=50, height=3)
-botonF = tk.Button(button_frame, text="Facturas", bg="blue", fg="white",width=50, height=3)
+botonP = tk.Button(button_frame, text="Productos", bg="red", fg="white",width=50, height=3, command=productos.mostrar_ventana_Producto)
+botonF = tk.Button(button_frame, text="Facturas", bg="blue", fg="white",width=50, height=3 ,command=facturas.mostrar_ventana_Facturas)
 botonC = tk.Button(button_frame, text="Clientes", bg="blue", fg="white", width=50, height=3, command=clientes.mostrar_ventana_clientes)
-botonS = tk.Button(button_frame, text="Salir", bg="green", fg="white",width=50, height=3)
+botonS = tk.Button(button_frame, text="Salir", bg="green", fg="white",width=50, height=3, command=root.destroy)
 
 
 
