@@ -8,28 +8,37 @@ def mostrarInterfazProductos(ventana_principal):
     
     ventana = tk.Toplevel()
     ventana.title("Gestión de Productos")
-    ventana.geometry("600x500")
+    ventana.geometry("700x500")
     ventana.configure(bg="white")
+    ventana.columnconfigure(0, weight=1)
+    ventana.rowconfigure(4, weight=1)  # Hace el listbox expandible
 
     crud = ProductoCRUD()
 
-    # Widgets de entrada
-    tk.Label(ventana, text="Nombre", bg="white").pack()
-    entry_nombre = tk.Entry(ventana, width=40)
-    entry_nombre.pack()
+    # Título
+    tk.Label(ventana, text="Gestión de Productos", font=("Arial", 18, "bold"), bg="white", fg="#333").grid(row=0, column=0, columnspan=2, pady=20)
 
-    tk.Label(ventana, text="Cantidad", bg="white").pack()
-    entry_cantidad = tk.Entry(ventana, width=40)
-    entry_cantidad.pack()
+    # Entradas
+    tk.Label(ventana, text="Nombre:", bg="white", anchor="w").grid(row=1, column=0, padx=20, sticky="w")
+    entry_nombre = tk.Entry(ventana, width=30)
+    entry_nombre.grid(row=1, column=1, padx=20, sticky="we")
 
-    lista = tk.Listbox(ventana, width=60)
-    lista.pack(pady=10)
+    tk.Label(ventana, text="Cantidad:", bg="white", anchor="w").grid(row=2, column=0, padx=20, sticky="w")
+    entry_cantidad = tk.Entry(ventana, width=30)
+    entry_cantidad.grid(row=2, column=1, padx=20, sticky="we")
 
-    # Funciones internas
+    # Lista
+    lista = tk.Listbox(ventana, width=60, height=10, font=("Consolas", 10))
+    lista.grid(row=4, column=0, columnspan=2, padx=20, pady=15, sticky="nsew")
+
+    # Botonera
+    frame_botones = tk.Frame(ventana, bg="white")
+    frame_botones.grid(row=5, column=0, columnspan=2, pady=10)
+
     def cargar_productos():
         lista.delete(0, tk.END)
         for producto in crud.listar():
-            lista.insert(tk.END, f"{producto.id} - {producto.nombre} ({producto.cantidad})")
+            lista.insert(tk.END, f"{producto.id:03} - {producto.nombre} ({producto.cantidad})")
 
     def agregar_producto():
         nombre = entry_nombre.get()
@@ -70,9 +79,10 @@ def mostrarInterfazProductos(ventana_principal):
         ventana_principal.deiconify()
 
     # Botones
-    tk.Button(ventana, text="Agregar", bg="green", fg="white", command=agregar_producto).pack(pady=2)
-    tk.Button(ventana, text="Actualizar", bg="blue", fg="white", command=actualizar_producto).pack(pady=2)
-    tk.Button(ventana, text="Eliminar", bg="red", fg="white", command=eliminar_producto).pack(pady=2)
-    tk.Button(ventana, text="Regresar", bg="gray", fg="white", command=regresar).pack(pady=10)
+    btn_config = {"width": 15, "height": 2, "padx": 5, "pady": 5}
+    tk.Button(frame_botones, text="Agregar", bg="#28a745", fg="white", command=agregar_producto, **btn_config).grid(row=0, column=0)
+    tk.Button(frame_botones, text="Actualizar", bg="#007bff", fg="white", command=actualizar_producto, **btn_config).grid(row=0, column=1)
+    tk.Button(frame_botones, text="Eliminar", bg="#dc3545", fg="white", command=eliminar_producto, **btn_config).grid(row=0, column=2)
+    tk.Button(frame_botones, text="Regresar", bg="#6c757d", fg="white", command=regresar, **btn_config).grid(row=0, column=3)
 
     cargar_productos()
