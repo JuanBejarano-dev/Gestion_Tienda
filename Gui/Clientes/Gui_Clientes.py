@@ -24,12 +24,12 @@ def mostrarInterfazClientes(ventana_principal):
     entry_nombre.grid(row=1, column=1, padx=20, sticky="we")
 
     tk.Label(ventana, text="Apellido:", bg="white", anchor="w").grid(row=2, column=0, padx=20, sticky="w")
-    entry_telefono = tk.Entry(ventana, width=30)
-    entry_telefono.grid(row=2, column=1, padx=20, sticky="we")
+    entry_apellido = tk.Entry(ventana, width=30)
+    entry_apellido.grid(row=2, column=1, padx=20, sticky="we")
 
     tk.Label(ventana, text="Correo:", bg="white", anchor="w").grid(row=3, column=0, padx=20, sticky="w")
-    entry_direccion = tk.Entry(ventana, width=30)
-    entry_direccion.grid(row=3, column=1, padx=20, sticky="we")
+    entry_correo = tk.Entry(ventana, width=30)
+    entry_correo.grid(row=3, column=1, padx=20, sticky="we")
 
     # Lista
     lista = tk.Listbox(ventana, width=80, height=15, font=("Consolas", 10))
@@ -42,22 +42,22 @@ def mostrarInterfazClientes(ventana_principal):
     def cargar_clientes():
         lista.delete(0, tk.END)
         for cliente in crud.listar():
-            lista.insert(tk.END, f"{cliente.id:03} - {cliente.nombre} | Tel: {cliente.telefono} | Dir: {cliente.direccion}")
+            lista.insert(tk.END, f"{cliente.id:03} - {cliente.nombre} {cliente.apellido} | Correo: {cliente.correo}")
 
     def agregar_cliente():
         nombre = entry_nombre.get()
-        telefono = entry_telefono.get()
-        direccion = entry_direccion.get()
+        apellido = entry_apellido.get()
+        correo = entry_correo.get()
         
         if not nombre:
             messagebox.showerror("Error", "El nombre es obligatorio")
             return
             
-        crud.crear(Cliente(nombre=nombre, telefono=telefono, direccion=direccion))
+        crud.crear(Cliente(nombre=nombre, apellido=apellido, correo=correo))
         cargar_clientes()
         entry_nombre.delete(0, tk.END)
-        entry_telefono.delete(0, tk.END)
-        entry_direccion.delete(0, tk.END)
+        entry_apellido.delete(0, tk.END)
+        entry_correo.delete(0, tk.END)
 
     def eliminar_cliente():
         seleccion = lista.curselection()
@@ -75,14 +75,14 @@ def mostrarInterfazClientes(ventana_principal):
         item = lista.get(seleccion[0])
         id = int(item.split(" - ")[0])
         nombre = entry_nombre.get()
-        telefono = entry_telefono.get()
-        direccion = entry_direccion.get()
+        apellido = entry_apellido.get()
+        correo = entry_correo.get()
         
         if not nombre:
             messagebox.showerror("Error", "El nombre es obligatorio")
             return
             
-        crud.actualizar(Cliente(id=id, nombre=nombre, telefono=telefono, direccion=direccion))
+        crud.actualizar(Cliente(id=id, nombre=nombre, apellido=apellido, correo=correo))
         cargar_clientes()
 
     def seleccionar_cliente(event):
@@ -92,17 +92,18 @@ def mostrarInterfazClientes(ventana_principal):
         item = lista.get(seleccion[0])
         partes = item.split(" | ")
         id_nombre = partes[0].split(" - ")
-        
+        nombre_apellido = id_nombre[1].strip().split(" ")
+
         entry_nombre.delete(0, tk.END)
-        entry_nombre.insert(0, id_nombre[1].strip())
-        
-        telefono = partes[1].replace("Tel: ", "").strip()
-        entry_telefono.delete(0, tk.END)
-        entry_telefono.insert(0, telefono)
-        
-        direccion = partes[2].replace("Dir: ", "").strip()
-        entry_direccion.delete(0, tk.END)
-        entry_direccion.insert(0, direccion)
+        entry_nombre.insert(0, nombre_apellido[0])
+
+        apellido = " ".join(nombre_apellido[1:])  # Por si hay segundo apellido
+        entry_apellido.delete(0, tk.END)
+        entry_apellido.insert(0, apellido)
+
+        correo = partes[1].replace("Correo: ", "").strip()
+        entry_correo.delete(0, tk.END)
+        entry_correo.insert(0, correo)
 
     def regresar():
         ventana.destroy()

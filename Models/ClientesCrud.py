@@ -3,28 +3,43 @@ from Models.Clientes import Cliente
 
 class ClienteCRUD:
     def __init__(self):
-        self.clientes = []
-        self.next_id = 1
+        self.conn = psycopg2.connect(
+            host="aws-0-us-east-2.pooler.supabase.com",
+            port=5432,
+            dbname="postgres",
+            user="postgres.ehgmqnytviispgzcjolb",
+            password="poo123",
+            sslmode="require"
+        )
 
-    def crear(self, cliente):
-        cliente.id = self.next_id
-        self.next_id += 1
-        self.clientes.append(cliente)
-        return cliente
+    def crear(self, cliente: Cliente):
+        with self.conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO clientes (nombre, apellido, correo) VALUES (%s, %s, %s)",
+                (cliente.nombre, cliente.apellido, cliente.correo)
+            )
+            self.conn.commit()
 
     def listar(self):
-        return self.clientes
+        clientes = []
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT id, nombre, apellido, correo FROM clientes")
+            for fila in cur.fetchall():
+                clientes.append(Cliente(id=fila[0], nombre=fila[1], apellido=fila[2], correo=fila[3]))
+        return clientes
 
-    def actualizar(self, cliente_actualizado):
-        for i, cliente in enumerate(self.clientes):
-            if cliente.id == cliente_actualizado.id:
-                self.clientes[i] = cliente_actualizado
-                return True
-        return False
+    def actualizar(self, cliente: Cliente):
+        with self.conn.cursor() as cur:
+            cur.execute(
+                "UPDATE clientes SET nombre=%s, apellido=%s, correo=%s WHERE id=%s",
+                (cliente.nombre, cliente.apellido, cliente.correo, cliente.id)
+            )
+            self.conn.commit()
 
-    def eliminar(self, id):
-        for i, cliente in enumerate(self.clientes):
-            if cliente.id == id:
-                del self.clientes[i]
-                return True
-        return False
+    def eliminar(self, id: int):
+        with self.conn.cursor() as cur:
+            cur.execute("DELETE FROM clientes WHERE id=%s", (id,))
+            self.conn.commit()
+
+    def cerrar(self):
+        self.conn.close()
