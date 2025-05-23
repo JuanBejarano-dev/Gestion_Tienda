@@ -11,165 +11,126 @@ def mostrarInterfazFacturas(ventana_principal):
     
     ventana = tk.Toplevel()
     ventana.title("Gestión de Facturas")
-    ventana.geometry("1100x750")
-    ventana.minsize(900, 650)
+    ventana.geometry("1200x800")
+    ventana.minsize(1000, 700)
     ventana.configure(bg="white")
     
-    # Configuración de pesos para grid responsive
+    # Configuración grid principal
     ventana.columnconfigure(0, weight=1)
     ventana.rowconfigure(0, weight=1)
     
-    # Frame principal contenedor
-    main_container = tk.Frame(ventana, bg="white")
-    main_container.grid(row=0, column=0, sticky="nsew")
-    main_container.columnconfigure(0, weight=1)
-    
-    # Configuración responsive del contenedor principal
-    for i in range(6):  # 6 filas principales
-        main_container.rowconfigure(i, weight=0 if i < 5 else 1)
-    
+    # Contenedor principal
+    main_frame = tk.Frame(ventana, bg="white")
+    main_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+    main_frame.columnconfigure(0, weight=1)
+    main_frame.rowconfigure(3, weight=1)
+
     # Título
-    lbl_titulo = tk.Label(main_container, text="Gestión de Facturas", 
-                         font=("Arial", 18, "bold"), bg="white", fg="#333")
-    lbl_titulo.grid(row=0, column=0, pady=(10, 20), sticky="ew", columnspan=2)
-    
-    # ----------------- Sección Datos Factura -----------------
-    frame_factura = tk.LabelFrame(main_container, text="Datos de Factura", 
-                                bg="white", padx=10, pady=10)
-    frame_factura.grid(row=1, column=0, sticky="ew", padx=10, pady=5)
-    frame_factura.columnconfigure(1, weight=1)
-    frame_factura.columnconfigure(3, weight=1)
-    
-    # Cliente
-    tk.Label(frame_factura, text="Cliente:", bg="white", anchor="w").grid(
-        row=0, column=0, sticky="ew", padx=5, pady=5)
-    
-    clientes = [c.nombre for c in ClienteCRUD().listar()]
-    combo_cliente = ttk.Combobox(frame_factura, values=clientes, state="readonly")
-    combo_cliente.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
-    
-    # Fecha
-    tk.Label(frame_factura, text="Fecha:", bg="white", anchor="w").grid(
-        row=0, column=2, sticky="ew", padx=5, pady=5)
-    
-    entry_fecha = tk.Entry(frame_factura)
-    entry_fecha.grid(row=0, column=3, sticky="ew", padx=5, pady=5)
+    lbl_titulo = tk.Label(main_frame, text="Gestión de Facturas", 
+                        font=("Arial", 16, "bold"), bg="white", fg="#333")
+    lbl_titulo.grid(row=0, column=0, pady=10, sticky="ew")
+
+    # Sección Datos Factura
+    frame_datos = tk.LabelFrame(main_frame, text="Datos de Factura", 
+                              bg="white", padx=10, pady=10)
+    frame_datos.grid(row=1, column=0, sticky="ew", pady=5)
+    frame_datos.columnconfigure(1, weight=1)
+    frame_datos.columnconfigure(3, weight=1)
+
+    # Campos Cliente y Fecha
+    tk.Label(frame_datos, text="Cliente:", bg="white").grid(row=0, column=0, padx=5, sticky="w")
+    clientes = [f"{c.id} - {c.nombre}" for c in ClienteCRUD().listar()]
+    combo_cliente = ttk.Combobox(frame_datos, values=clientes, state="readonly", width=30)
+    combo_cliente.grid(row=0, column=1, padx=5, sticky="ew")
+
+    tk.Label(frame_datos, text="Fecha:", bg="white").grid(row=0, column=2, padx=5, sticky="w")
+    entry_fecha = tk.Entry(frame_datos, width=15)
+    entry_fecha.grid(row=0, column=3, padx=5, sticky="ew")
     entry_fecha.insert(0, datetime.now().strftime("%Y-%m-%d"))
-    
-    # ----------------- Sección Detalles Factura -----------------
-    frame_detalles = tk.LabelFrame(main_container, text="Detalles de Factura", 
+
+    # Sección Detalles
+    frame_detalles = tk.LabelFrame(main_frame, text="Detalles de Factura", 
                                  bg="white", padx=10, pady=10)
-    frame_detalles.grid(row=2, column=0, sticky="nsew", padx=10, pady=5)
-    
-    # Configuración responsive del frame de detalles
-    for i in range(4):
-        frame_detalles.columnconfigure(i, weight=1 if i % 2 == 1 else 0)
-    frame_detalles.rowconfigure(3, weight=1)
-    
-    # Producto
-    tk.Label(frame_detalles, text="Producto:", bg="white", anchor="w").grid(
-        row=0, column=0, sticky="ew", padx=5, pady=5)
-    
-    productos = [f"{p.id} - {p.nombre}" for p in ProductoCRUD().listar()]
+    frame_detalles.grid(row=2, column=0, sticky="nsew", pady=5)
+    frame_detalles.columnconfigure(1, weight=1)
+    frame_detalles.rowconfigure(2, weight=1)
+
+    # Campos Producto
+    tk.Label(frame_detalles, text="Producto:", bg="white").grid(row=0, column=0, padx=5, sticky="w")
+    productos = [f"{p.id} - {p.nombre} (Stock: {p.cantidad})" for p in ProductoCRUD().listar()]
     combo_producto = ttk.Combobox(frame_detalles, values=productos, state="readonly")
-    combo_producto.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
-    
-    # Cantidad
-    tk.Label(frame_detalles, text="Cantidad:", bg="white", anchor="w").grid(
-        row=0, column=2, sticky="ew", padx=5, pady=5)
-    
-    entry_cantidad = tk.Entry(frame_detalles)
-    entry_cantidad.grid(row=0, column=3, sticky="ew", padx=5, pady=5)
-    
-    # Precio Unitario
-    tk.Label(frame_detalles, text="Precio Unitario:", bg="white", anchor="w").grid(
-        row=1, column=0, sticky="ew", padx=5, pady=5)
-    
-    entry_precio = tk.Entry(frame_detalles)
-    entry_precio.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
-    
-    # Botones de detalles
-    btn_frame = tk.Frame(frame_detalles, bg="white")
-    btn_frame.grid(row=1, column=2, columnspan=2, sticky="e", padx=5, pady=5)
-    
-    btn_agregar_detalle = tk.Button(btn_frame, text="Agregar Detalle", bg="#4CAF50", fg="white")
-    btn_agregar_detalle.pack(side=tk.LEFT, padx=2)
-    
+    combo_producto.grid(row=0, column=1, padx=5, sticky="ew")
+
+    tk.Label(frame_detalles, text="Cantidad:", bg="white").grid(row=0, column=2, padx=5, sticky="w")
+    entry_cantidad = tk.Entry(frame_detalles, width=10)
+    entry_cantidad.grid(row=0, column=3, padx=5, sticky="ew")
+
+    tk.Label(frame_detalles, text="Precio Unitario:", bg="white").grid(row=1, column=0, padx=5, sticky="w")
+    entry_precio = tk.Entry(frame_detalles, width=15)
+    entry_precio.grid(row=1, column=1, padx=5, sticky="ew")
+
+    # Botón Agregar Detalle
+    btn_agregar = tk.Button(frame_detalles, text="Agregar Detalle", bg="#4CAF50", fg="white", command=lambda: agregar_detalle())
+    btn_agregar.grid(row=1, column=3, padx=5, sticky="e")
+
     # Tabla de detalles
-    columns = ("Producto", "Cantidad", "Precio Unitario", "Subtotal")
+    columns = ("Producto", "Cantidad", "Precio", "Subtotal")
     tree_detalles = ttk.Treeview(frame_detalles, columns=columns, show="headings", height=4)
-    
     for col in columns:
         tree_detalles.heading(col, text=col)
-        tree_detalles.column(col, width=120, stretch=True)
-    
-    tree_detalles.grid(row=2, column=0, columnspan=4, sticky="nsew", padx=5, pady=5)
-    
-    # Scrollbar para la tabla de detalles
-    scroll_detalles = ttk.Scrollbar(frame_detalles, orient="vertical", command=tree_detalles.yview)
-    scroll_detalles.grid(row=2, column=4, sticky="ns")
-    tree_detalles.configure(yscrollcommand=scroll_detalles.set)
-    
+        tree_detalles.column(col, width=100, anchor="center")
+    tree_detalles.grid(row=2, column=0, columnspan=4, sticky="nsew", pady=5)
+
+    # Scrollbar
+    scroll = ttk.Scrollbar(frame_detalles, orient="vertical", command=tree_detalles.yview)
+    scroll.grid(row=2, column=4, sticky="ns")
+    tree_detalles.configure(yscrollcommand=scroll.set)
+
     # Total
-    tk.Label(frame_detalles, text="Total:", bg="white", font=("Arial", 10, "bold"), 
-            anchor="e").grid(row=3, column=2, sticky="e", padx=5, pady=5)
-    
-    lbl_total = tk.Label(frame_detalles, text="0.00", bg="white", 
-                       font=("Arial", 10, "bold"), anchor="w")
-    lbl_total.grid(row=3, column=3, sticky="w", padx=5, pady=5)
-    
-    # ----------------- Sección Listado Facturas -----------------
-    frame_lista = tk.LabelFrame(main_container, text="Facturas Registradas", 
-                              bg="white", padx=10, pady=10)
-    frame_lista.grid(row=3, column=0, sticky="nsew", padx=10, pady=5)
-    frame_lista.columnconfigure(0, weight=1)
-    frame_lista.rowconfigure(0, weight=1)
-    
-    # Tabla de facturas
-    columns_facturas = ("ID", "Cliente", "Fecha", "Total")
-    tree_facturas = ttk.Treeview(frame_lista, columns=columns_facturas, show="headings", height=8)
-    
-    for col in columns_facturas:
+    tk.Label(frame_detalles, text="Total:", bg="white", font=("Arial", 10, "bold")).grid(row=3, column=2, sticky="e")
+    lbl_total = tk.Label(frame_detalles, text="0.00", bg="white", font=("Arial", 10, "bold"))
+    lbl_total.grid(row=3, column=3, sticky="w")
+
+    # Listado de Facturas
+    frame_listado = tk.LabelFrame(main_frame, text="Facturas Registradas", 
+                                bg="white", padx=10, pady=10)
+    frame_listado.grid(row=3, column=0, sticky="nsew", pady=5)
+    frame_listado.columnconfigure(0, weight=1)
+    frame_listado.rowconfigure(0, weight=1)
+
+    columns = ("ID", "Cliente", "Fecha", "Total")
+    tree_facturas = ttk.Treeview(frame_listado, columns=columns, show="headings", height=8)
+    for col in columns:
         tree_facturas.heading(col, text=col)
-        tree_facturas.column(col, width=120, stretch=True)
-    
+        tree_facturas.column(col, width=100, anchor="center")
     tree_facturas.grid(row=0, column=0, sticky="nsew")
-    
-    # Scrollbars para la tabla de facturas
-    scroll_y = ttk.Scrollbar(frame_lista, orient="vertical", command=tree_facturas.yview)
+
+    scroll_y = ttk.Scrollbar(frame_listado, orient="vertical", command=tree_facturas.yview)
     scroll_y.grid(row=0, column=1, sticky="ns")
-    
-    scroll_x = ttk.Scrollbar(frame_lista, orient="horizontal", command=tree_facturas.xview)
-    scroll_x.grid(row=1, column=0, sticky="ew")
-    
-    tree_facturas.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
-    
-    # ----------------- Botones Principales -----------------
-    frame_botones = tk.Frame(main_container, bg="white")
+    tree_facturas.configure(yscrollcommand=scroll_y.set)
+
+    # Botonera inferior
+    frame_botones = tk.Frame(main_frame, bg="white")
     frame_botones.grid(row=4, column=0, pady=10, sticky="ew")
     
-    btn_guardar = tk.Button(frame_botones, text="Guardar Factura", bg="#2196F3", fg="white", width=15)
-    btn_guardar.pack(side=tk.LEFT, padx=5, expand=True)
+    botones = [
+        ("Guardar", "#2196F3", lambda: guardar_factura()),
+        ("Eliminar", "#F44336", lambda: eliminar_factura()),
+        ("Limpiar", "#FF9800", lambda: limpiar_formulario()),
+        ("Regresar", "#607D8B", lambda: [ventana.destroy(), ventana_principal.deiconify()])
+    ]
     
-    btn_eliminar = tk.Button(frame_botones, text="Eliminar Factura", bg="#F44336", fg="white", width=15)
-    btn_eliminar.pack(side=tk.LEFT, padx=5, expand=True)
-    
-    btn_limpiar = tk.Button(frame_botones, text="Limpiar Formulario", bg="#FF9800", fg="white", width=15)
-    btn_limpiar.pack(side=tk.LEFT, padx=5, expand=True)
-    
-    btn_regresar = tk.Button(frame_botones, text="Regresar", bg="#607D8B", fg="white", width=15,
-                           command=lambda: [ventana.destroy(), ventana_principal.deiconify()])
-    btn_regresar.pack(side=tk.LEFT, padx=5, expand=True)
-    
-    # ----------------- Funcionalidades -----------------
-    def calcular_total():
-        total = 0.0
-        for child in tree_detalles.get_children():
-            valores = tree_detalles.item(child)['values']
-            subtotal = float(valores[2]) * int(valores[1])
-            total += subtotal
-        lbl_total.config(text=f"{total:.2f}")
-    
+    for i, (texto, color, comando) in enumerate(botones):
+        btn = tk.Button(frame_botones, text=texto, bg=color, fg="white", width=12)
+        btn.grid(row=0, column=i, padx=5, ipady=3)
+        btn.configure(command=comando)
+
+    # Funcionalidades
+    def actualizar_lista_productos():
+        nonlocal productos
+        productos = [f"{p.id} - {p.nombre} (Stock: {p.cantidad})" for p in ProductoCRUD().listar()]
+        combo_producto['values'] = productos
+
     def agregar_detalle():
         producto = combo_producto.get()
         cantidad = entry_cantidad.get()
@@ -180,17 +141,24 @@ def mostrarInterfazFacturas(ventana_principal):
             return
 
         try:
+            # Extraer datos del producto
             id_producto = int(producto.split(" - ")[0])
+            nombre_producto = producto.split(" - ")[1].split(" (Stock")[0]
+            stock = int(producto.split("Stock: ")[1].replace(")", ""))
             cantidad = int(cantidad)
             precio = float(precio)
             
+            # Validar stock
+            if cantidad > stock:
+                messagebox.showerror("Error", f"Stock insuficiente! Disponible: {stock}")
+                return
+                
             if cantidad <= 0 or precio <= 0:
-                messagebox.showerror("Error", "Los valores deben ser positivos")
+                messagebox.showerror("Error", "Valores deben ser positivos")
                 return
 
+            # Agregar a la tabla
             subtotal = cantidad * precio
-            nombre_producto = producto.split(" - ")[1]
-
             tree_detalles.insert("", tk.END, values=(
                 nombre_producto, 
                 cantidad, 
@@ -198,20 +166,25 @@ def mostrarInterfazFacturas(ventana_principal):
                 f"{subtotal:.2f}"
             ))
 
+            # Limpiar campos
             combo_producto.set('')
             entry_cantidad.delete(0, tk.END)
             entry_precio.delete(0, tk.END)
             calcular_total()
+            actualizar_lista_productos()
 
-        except ValueError:
-            messagebox.showerror("Error", "Valores inválidos")
-    
+        except Exception as e:
+            messagebox.showerror("Error", f"Dato inválido: {str(e)}")
+
+    def calcular_total():
+        total = 0.0
+        for child in tree_detalles.get_children():
+            valores = tree_detalles.item(child)['values']
+            total += float(valores[3])  # Sumar subtotales
+        lbl_total.config(text=f"{total:.2f}")
+
     def guardar_factura():
-        cliente = combo_cliente.get()
-        fecha = entry_fecha.get()
-        detalles = []
-
-        if not cliente:
+        if not combo_cliente.get():
             messagebox.showerror("Error", "Seleccione un cliente")
             return
 
@@ -220,46 +193,57 @@ def mostrarInterfazFacturas(ventana_principal):
             return
 
         try:
+            # Crear factura (ID se genera automáticamente)
+            factura = Factura(
+                id=None,  # Corregido: no requiere ID inicial
+                id_cliente=int(combo_cliente.get().split(" - ")[0]),
+                fecha=entry_fecha.get(),
+                total=float(lbl_total.cget("text"))
+            )
+            
+            # Crear detalles
+            detalles = []
             for child in tree_detalles.get_children():
                 valores = tree_detalles.item(child)['values']
+                # Obtener ID del producto desde la lista actualizada
                 id_producto = int([p.split(" - ")[0] for p in productos if valores[0] in p][0])
-                detalles.append(DetalleFactura)(
+                detalles.append(DetalleFactura(
                     id_producto=id_producto,
                     cantidad=int(valores[1]),
                     precio_unitario=float(valores[2])
-                )
+                ))
 
-            id_cliente = [c.id for c in ClienteCRUD().listar() if c.nombre == cliente][0]
-            total = float(lbl_total.cget("text"))
+            # Guardar en base de datos (usando transacción)
+            with FacturaCRUD() as crud:
+                factura_id = crud.crear(factura)
+                for detalle in detalles:
+                    crud.crear_detalle(crud.conn.cursor(), factura_id, detalle)  # Pasar cursor explícitamente
+                    # Actualizar stock
+                    ProductoCRUD().actualizar_stock(detalle.id_producto, -detalle.cantidad)
 
-            nueva_factura = Factura(
-                id_cliente=id_cliente,
-                fecha=fecha,
-                total=total,
-                detalles=detalles
-            )
-
-            FacturaCRUD().crear(nueva_factura)
-            cargar_facturas()
             messagebox.showinfo("Éxito", "Factura guardada correctamente")
             limpiar_formulario()
+            cargar_facturas()
+            actualizar_lista_productos()
 
         except Exception as e:
-            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
-    
+            messagebox.showerror("Error", f"Error al guardar: {str(e)}")
+
     def eliminar_factura():
         seleccion = tree_facturas.selection()
         if not seleccion:
-            messagebox.showwarning("Advertencia", "Seleccione una factura para eliminar")
+            messagebox.showwarning("Advertencia", "Seleccione una factura")
             return
+            
+        id_factura = tree_facturas.item(seleccion[0])['values'][0]
+        if messagebox.askyesno("Confirmar", "¿Eliminar esta factura?"):
+            try:
+                FacturaCRUD().eliminar(id_factura)
+                cargar_facturas()
+                messagebox.showinfo("Éxito", "Factura eliminada")
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar: {str(e)}")
 
-        confirmar = messagebox.askyesno("Confirmar", "¿Está seguro de eliminar esta factura?")
-        if confirmar:
-            id_factura = int(tree_facturas.item(seleccion[0])['values'][0])
-            FacturaCRUD().eliminar(id_factura)
-            cargar_facturas()
-            messagebox.showinfo("Éxito", "Factura eliminada correctamente")
-    
     def cargar_facturas():
         tree_facturas.delete(*tree_facturas.get_children())
         for factura in FacturaCRUD().listar():
@@ -270,36 +254,25 @@ def mostrarInterfazFacturas(ventana_principal):
                 factura.fecha,
                 f"{factura.total:.2f}"
             ))
-    
+
     def limpiar_formulario():
         combo_cliente.set('')
         entry_fecha.delete(0, tk.END)
         entry_fecha.insert(0, datetime.now().strftime("%Y-%m-%d"))
         tree_detalles.delete(*tree_detalles.get_children())
         lbl_total.config(text="0.00")
-    
-    # Configurar eventos
-    btn_agregar_detalle.config(command=agregar_detalle)
-    btn_guardar.config(command=guardar_factura)
-    btn_eliminar.config(command=eliminar_factura)
-    btn_limpiar.config(command=limpiar_formulario)
-    
-    # Manejar redimensionamiento
-    def on_resize(event):
-        # Ajustar altura de las tablas según el tamaño de la ventana
-        new_height = max(4, (ventana.winfo_height() - 400) // 30)
-        tree_detalles.configure(height=new_height)
-        tree_facturas.configure(height=new_height + 2)
-    
-    ventana.bind("<Configure>", on_resize)
-    
-    # Cargar datos iniciales
+        actualizar_lista_productos()
+
+    # Carga inicial
     cargar_facturas()
+    actualizar_lista_productos()
     
-    # Centrar ventana
+    # Centrado de ventana
     ventana.update_idletasks()
-    width = ventana.winfo_width()
-    height = ventana.winfo_height()
-    x = (ventana.winfo_screenwidth() // 2) - (width // 2)
-    y = (ventana.winfo_screenheight() // 2) - (height // 2)
-    ventana.geometry(f"{width}x{height}+{x}+{y}")
+    ancho = ventana.winfo_width()
+    alto = ventana.winfo_height()
+    x = (ventana.winfo_screenwidth() // 2) - (ancho // 2)
+    y = (ventana.winfo_screenheight() // 2) - (alto // 2)
+    ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
+
+    ventana.mainloop()

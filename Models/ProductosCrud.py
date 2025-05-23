@@ -37,5 +37,18 @@ class ProductoCRUD:
             cur.execute("DELETE FROM productos WHERE id=%s", (id,))
             self.conn.commit()
 
+    def actualizar_stock(self, id_producto: int, cantidad: int):
+        """Actualiza el stock de un producto (suma o resta)."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE productos SET cantidad = cantidad + %s WHERE id = %s",
+                    (cantidad, id_producto)
+                )
+                self.conn.commit()
+        except Exception as e:
+            self.conn.rollback()
+            raise e
+
     def cerrar(self):
         self.conn.close()

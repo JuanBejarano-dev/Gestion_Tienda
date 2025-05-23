@@ -1,13 +1,13 @@
 class Factura:
-    def __init__(self, id=None, id_cliente=None, fecha=None, total=0.0, detalles=None):
+    def __init__(self, id: int, id_cliente: int, fecha: str, total: float):
         self.id = id
         self.id_cliente = id_cliente
         self.fecha = fecha
         self.total = total
-        self.detalles = detalles or []
-        
+        self.detalles = []  # Lista de objetos DetalleFactura
+
 class DetalleFactura:
-    def __init__(self, id_producto=None, cantidad=0, precio_unitario=0.0):
+    def __init__(self, id_producto: int, cantidad: int, precio_unitario: float):
         self.id_producto = id_producto
         self.cantidad = cantidad
         self.precio_unitario = precio_unitario
