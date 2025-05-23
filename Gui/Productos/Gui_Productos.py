@@ -3,15 +3,17 @@ from tkinter import messagebox
 from Models.Productos import Producto
 from Models.ProductosCrud import ProductoCRUD
 
-def mostrarInterfazProductos():
+def mostrarInterfazProductos(ventana_principal):
+    ventana_principal.withdraw()
+    
     ventana = tk.Toplevel()
     ventana.title("Gestión de Productos")
-    ventana.geometry("600x400")
+    ventana.geometry("600x500")
     ventana.configure(bg="white")
 
     crud = ProductoCRUD()
 
-    # Widgets
+    # Widgets de entrada
     tk.Label(ventana, text="Nombre", bg="white").pack()
     entry_nombre = tk.Entry(ventana, width=40)
     entry_nombre.pack()
@@ -63,10 +65,14 @@ def mostrarInterfazProductos():
         crud.actualizar(Producto(id=id, nombre=nombre, cantidad=int(cantidad)))
         cargar_productos()
 
+    def regresar():
+        ventana.destroy()
+        ventana_principal.deiconify()
+
     # Botones
     tk.Button(ventana, text="Agregar", bg="green", fg="white", command=agregar_producto).pack(pady=2)
     tk.Button(ventana, text="Actualizar", bg="blue", fg="white", command=actualizar_producto).pack(pady=2)
     tk.Button(ventana, text="Eliminar", bg="red", fg="white", command=eliminar_producto).pack(pady=2)
-    tk.Button(ventana, text="Salir", bg="gray", fg="white", command=ventana.destroy).pack(pady=2)
+    tk.Button(ventana, text="Regresar", bg="gray", fg="white", command=regresar).pack(pady=10)
 
     cargar_productos()
