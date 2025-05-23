@@ -11,7 +11,7 @@ def mostrarInterfazProductos(ventana_principal):
     ventana.geometry("700x500")
     ventana.configure(bg="white")
     ventana.columnconfigure(0, weight=1)
-    ventana.rowconfigure(4, weight=1)  # Hace el listbox expandible
+    ventana.rowconfigure(4, weight=1)  
 
     crud = ProductoCRUD()
 
